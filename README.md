@@ -3,49 +3,46 @@
 > **Prueba técnica · Ficha ADSO 3413974**
 > Horario: de **9:15 a. m. a 3:00 p. m.** (15:00). Después, **feria de presentación** de cada proyecto.
 
-Este repositorio guarda las **utilidades** de *Manager Library*: el sembrador de datos de demostración, que usa la API. **Empieza vacío a propósito**: se construye en el fork de cada aprendiz.
+Este repositorio contiene el sembrador de datos de demostración de *Manager Library*. La herramienta
+usa exclusivamente la API HTTP; no abre conexiones a PostgreSQL ni inserta filas directamente.
 
-## Instrucciones
+## Stack y desarrollo guiado por especificación
 
-Cada aprendiz debe **crear el fork** de los seis repositorios del proyecto y **resolver el proyecto
-con el spec planteado**.
-
-1. Hacer fork, a su cuenta de GitHub, de cada repositorio de la tabla del final.
-2. Leer el spec en [`test-manager-library-3413974-docs`](https://github.com/code-sena/test-manager-library-3413974-docs).
-   Se entrega en dos versiones: `spec-python/` y `spec-.net/`.
-3. Desarrollar en los forks.
-
-## El reto se desarrolla con React y PHP (Laravel)
-
-El spec está escrito para Python y para .NET, pero el reto **no** se hace en esos lenguajes:
-
-| Capa | Tecnología del reto |
+| Capa | Tecnología |
 |---|---|
 | Frontend | React |
 | Backend | PHP con Laravel |
+| Sembrador | Node.js en contenedor |
 
-Lo que el spec define sobre el negocio —historias, criterios de aceptación, reglas, contrato de la
-API, modelo de datos— se respeta. Lo que define sobre la tecnología se traduce a React y Laravel.
+Se conservan las historias, reglas, contrato API y modelo de datos del spec. La prueba evalúa cómo
+se aplica SDD (*Spec-Driven Development*) al stack tecnológico definido.
 
-## La prueba no consiste en escribir el código
+## Ejecutar el sembrador
 
-El propósito principal es ver la **capacidad de desempeño con SDD** (*Spec-Driven Development*,
-desarrollo guiado por especificación): cómo se lee, se interpreta y se aplica una especificación
-para llevarla a un stack distinto. El código es el medio, no el fin.
+Desde la raíz del proyecto, después de aplicar las migraciones y aprovisionar al administrador:
 
-## Feria de presentación
+```powershell
+docker compose --profile tools --env-file infra\.env -f infra\compose.yaml run --build --rm tool
+```
 
-Al cerrar la prueba (3:00 p. m.) cada aprendiz **presenta su proyecto** al grupo: qué construyó del spec, qué dejó fuera y por qué,
-y una demostración corta de lo que funciona (la aplicación y el sitio público). Lo que se presenta es lo que quedó **subido a los forks
-antes de las 3:00 p. m.**: no se presenta nada que no esté en GitHub.
+La ejecución identifica y reutiliza **40 libros** y **10 socios**, y asegura al menos **15 préstamos**
+y **3 préstamos activos vencidos**. Una segunda ejecución no duplica el catálogo, los socios ni los
+préstamos demostrativos. Al final verifica por API el listado de vencidos y el reporte de más
+prestados.
+
+El perfil Compose dirige las escrituras a `api-demo`, una instancia temporal de Laravel conectada a
+la misma base y al mismo secreto JWT de la API principal. `DEMO_LIBRARY_TIME` (por defecto
+`2020-01-01T12:00:00Z`) permite crear préstamos históricos usando las rutas contractuales
+existentes; las comprobaciones se hacen contra la API principal con su reloj real. No agrega rutas
+al contrato ni ejecuta SQL.
 
 ## Los seis repositorios
 
-| Repositorio | Qué va ahí |
+| Repositorio | Responsabilidad |
 |---|---|
-| [`test-manager-library-3413974-docs`](https://github.com/code-sena/test-manager-library-3413974-docs) | El spec: `spec-python/` y `spec-.net/` |
-| [`test-manager-library-3413974-api`](https://github.com/code-sena/test-manager-library-3413974-api) | Backend en PHP (Laravel) |
-| [`test-manager-library-3413974-app`](https://github.com/code-sena/test-manager-library-3413974-app) | Frontend en React |
-| [`test-manager-library-3413974-page`](https://github.com/code-sena/test-manager-library-3413974-page) | Sitio público estático de presentación |
-| [`test-manager-library-3413974-infra`](https://github.com/code-sena/test-manager-library-3413974-infra) | Contenedores, red, volúmenes y motor de base de datos vacío |
-| [`test-manager-library-3413974-tool`](https://github.com/code-sena/test-manager-library-3413974-tool) | Utilidades: sembrador de datos de demostración |
+| [`docs`](https://github.com/code-sena/test-manager-library-3413974-docs) | Spec y decisiones SDD |
+| [`api`](https://github.com/code-sena/test-manager-library-3413974-api) | Backend Laravel |
+| [`app`](https://github.com/code-sena/test-manager-library-3413974-app) | Frontend React |
+| [`page`](https://github.com/code-sena/test-manager-library-3413974-page) | Sitio público estático |
+| [`infra`](https://github.com/code-sena/test-manager-library-3413974-infra) | Docker Compose y PostgreSQL |
+| [`tool`](https://github.com/code-sena/test-manager-library-3413974-tool) | Sembrador de datos de demostración |
